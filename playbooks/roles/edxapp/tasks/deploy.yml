@@ -426,6 +426,8 @@
   when: COMMON_TAG_EC2_INSTANCE
 
 - set_fact: edxapp_installed=true
+  tags:
+    - edxapp_cfg
 
 - name: restart edxapp
   supervisorctl_local: >
@@ -436,6 +438,8 @@
   when: edxapp_installed is defined and celery_worker is not defined and not disable_edx_services
   sudo_user: "{{ supervisor_service_user }}"
   with_items: service_variants_enabled
+  tags:
+    - edxapp_cfg
 
 - name: restart edxapp_workers
   supervisorctl_local: >
@@ -446,3 +450,5 @@
   when: edxapp_installed is defined and celery_worker is defined and not disable_edx_services
   with_items: edxapp_workers
   sudo_user: "{{ common_web_user }}"
+  tags:
+    - edxapp_cfg
