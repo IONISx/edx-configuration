@@ -481,6 +481,8 @@ EDXAPP_PROFILE_IMAGE_MIN_BYTES: 100
 
 EDXAPP_PARSE_KEYS: {}
 
+EDXAPP_IONISX_AUTH: !!null
+
 #-------- Everything below this line is internal to the role ------------
 
 #Use YAML references (& and *) and hash merge <<: to factor out shared settings
@@ -666,6 +668,7 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
   THIRD_PARTY_AUTH: "{{ EDXAPP_THIRD_PARTY_AUTH }}"
   AWS_STORAGE_BUCKET_NAME: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
   DJFS: "{{ EDXAPP_DJFS }}"
+  IONISX_AUTH: '{{ EDXAPP_IONISX_AUTH }}'
 
 generic_cache_config: &default_generic_cache
   BACKEND:  'django.core.cache.backends.memcached.MemcachedCache'
