@@ -234,6 +234,10 @@ EDXAPP_PLATFORM_GOOGLE_PLUS_URL: "https://plus.google.com/YourGooglePlusAccount/
 
 EDXAPP_SOCIAL_MEDIA_FOOTER_URLS: {}
 
+EDXAPP_CMS_ADVANCED_PROBLEM_TYPES:
+  - component: 'openassessment'
+    boilerplate_name: null
+
 EDXAPP_ENV_EXTRA: {}
 EDXAPP_AUTH_EXTRA: {}
 EDXAPP_LMS_AUTH_EXTRA: "{{ EDXAPP_AUTH_EXTRA }}"
@@ -854,6 +858,7 @@ cms_env_config:
   <<: *edxapp_generic_env
   SITE_NAME:  "{{ EDXAPP_CMS_SITE_NAME }}"
   GIT_REPO_EXPORT_DIR: "{{ EDXAPP_GIT_REPO_EXPORT_DIR }}"
+  ADVANCED_PROBLEM_TYPES: "{{ EDXAPP_CMS_ADVANCED_PROBLEM_TYPES }}"
 
 # install dir for the edx-platform repo
 edxapp_code_dir: "{{ edxapp_app_dir }}/edx-platform"
