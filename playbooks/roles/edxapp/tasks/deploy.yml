@@ -21,12 +21,16 @@
     src=git_ssh_auth.sh.j2 dest={{ edxapp_git_ssh }}
     owner={{ edxapp_user }} mode=750
   when: EDXAPP_USE_GIT_IDENTITY
+  tags:
+  - theme
 
 - name: install read-only ssh key
   copy: >
     content="{{ EDXAPP_GIT_IDENTITY }}" dest={{ edxapp_git_identity }}
     force=yes owner={{ edxapp_user }} mode=0600
   when: EDXAPP_USE_GIT_IDENTITY
+  tags:
+  - theme
 
 - name: check if git repo exists before pruning
   stat: path={{ edxapp_code_dir }}/.git
@@ -66,6 +70,8 @@
   environment:
     GIT_SSH: "{{ edxapp_git_ssh }}"
   register: edxapp_theme_checkout
+  tags:
+  - theme
 
 - name: create checksum for requirements, package.json and Gemfile
   shell: >
@@ -421,6 +427,8 @@
 - name: remove read-only ssh key
   file: path={{ edxapp_git_identity }} state=absent
   when: EDXAPP_USE_GIT_IDENTITY
+  tags:
+  - theme
 
 - include: tag_ec2.yml tags=deploy
   when: COMMON_TAG_EC2_INSTANCE
