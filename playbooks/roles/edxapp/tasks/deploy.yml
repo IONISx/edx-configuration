@@ -232,6 +232,8 @@
     state=present
   with_items: EDXAPP_EXTRA_REQUIREMENTS
   sudo_user: "{{ edxapp_user }}"
+  tags:
+    - xblocks
 
 # If using CAS and you have a function for mapping attributes, install
 # the module here.  The next few tasks set up the python code sandbox
