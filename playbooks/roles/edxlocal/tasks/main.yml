@@ -19,7 +19,7 @@
     state=present
 
 - name: install apt repository
-  apt_repository_1.8:
+  apt_repository:
     repo='deb http://ppa.launchpad.net/ondrej/mysql-5.6/ubuntu precise main'
     update_cache=yes
   
@@ -95,6 +95,12 @@
     - "{{ ANALYTICS_API_SERVICE_CONFIG['DATABASES']['default']['NAME'] }}"
     - "{{ ANALYTICS_API_SERVICE_CONFIG['DATABASES']['reports']['NAME'] }}"
 
+- name: create database for insights
+  mysql_db: >
+    db={{ INSIGHTS_DATABASES.default.NAME }}
+    state=present
+    encoding=utf8
+  when: INSIGHTS_DATABASES is defined
 
 - name: create database for ecommerce
   mysql_db: >

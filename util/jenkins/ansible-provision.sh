@@ -63,18 +63,20 @@ if [[ ! -f $BOTO_CONFIG ]]; then
 fi
 
 extra_vars_file="/var/tmp/extra-vars-$$.yml"
+sandbox_vars_file="${WORKSPACE}/configuration-secure/ansible/vars/developer-sandbox.yml"
 extra_var_arg="-e@${extra_vars_file}"
 
 if [[ $edx_internal == "true" ]]; then
     # if this is a an edx server include
     # the secret var file
-    extra_var_arg="-e@${WORKSPACE}/configuration-secure/ansible/vars/developer-sandbox.yml -e@${extra_vars_file}"
+    extra_var_arg="-e@${sandbox_vars_file} -e@${extra_vars_file}"
 fi
 
 if [[ -z $region ]]; then
   region="us-east-1"
 fi
 
+# edX has reservations for sandboxes in this zone, don't change without updating reservations.
 if [[ -z $zone ]]; then
   zone="us-east-1c"
 fi
@@ -97,11 +99,11 @@ fi
 
 if [[ -z $ami ]]; then
   if [[ $server_type == "full_edx_installation" ]]; then
-    ami="ami-867d3bee"
+    ami="ami-b1d92ada"
   elif [[ $server_type == "ubuntu_12.04" || $server_type == "full_edx_installation_from_scratch" ]]; then
-    ami="ami-e2bbff8a"
+    ami="ami-b92bdfd2"
   elif [[ $server_type == "ubuntu_14.04(experimental)" ]]; then
-    ami="ami-88562de0"
+    ami="ami-3b6a8050"
   fi
 fi
 
@@ -122,7 +124,6 @@ ssh-keygen -f "/var/lib/jenkins/.ssh/known_hosts" -R "$deploy_host"
 cd playbooks/edx-east
 
 cat << EOF > $extra_vars_file
----
 ansible_ssh_private_key_file: /var/lib/jenkins/${keypair}.pem
 edx_platform_version: $edxapp_version
 forum_version: $forum_version
@@ -138,6 +139,7 @@ EDXAPP_STATIC_URL_BASE: $static_url_base
 EDXAPP_LMS_NGINX_PORT: 80
 EDXAPP_LMS_PREVIEW_NGINX_PORT: 80
 EDXAPP_CMS_NGINX_PORT: 80
+NGINX_SET_X_FORWARDED_HEADERS: True
 EDX_ANSIBLE_DUMP_VARS: true
 migrate_db: "yes"
 openid_workaround: True
@@ -172,9 +174,9 @@ if [[ $edx_internal == "true" ]]; then
     # user and set edx_internal to True so that
     # xserver is installed
     cat << EOF >> $extra_vars_file
-EDXAPP_PREVIEW_LMS_BASE: preview.${deploy_host}
+EDXAPP_PREVIEW_LMS_BASE: preview-${deploy_host}
 EDXAPP_LMS_BASE: ${deploy_host}
-EDXAPP_CMS_BASE: studio.${deploy_host}
+EDXAPP_CMS_BASE: studio-${deploy_host}
 EDXAPP_SITE_NAME: ${deploy_host}
 CERTS_DOWNLOAD_URL: "http://${deploy_host}:18090"
 CERTS_VERIFY_URL: "http://${deploy_host}:18090"
@@ -261,7 +263,7 @@ fi
 
 # deploy the edx_ansible role
 run_ansible edx_ansible.yml -i "${deploy_host}," $extra_var_arg --user ubuntu
-cat $extra_vars_file | grep -v -E "_version|migrate_db" | tee ${extra_vars_file}_clean
+cat $sandbox_vars_file $extra_vars_file | grep -v -E "_version|migrate_db" > ${extra_vars_file}_clean
 ansible -c ssh -i "${deploy_host}," $deploy_host -m copy -a "src=${extra_vars_file}_clean dest=/edx/app/edx_ansible/server-vars.yml" -u ubuntu -b
 ret=$?
 if [[ $ret -ne 0 ]]; then

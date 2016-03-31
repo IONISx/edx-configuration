@@ -117,6 +117,7 @@
 - name: gather {{ item }} static assets with paver
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets-{{ item }}"
   when: celery_worker is not defined and not devstack and item != "lms-preview"
-  with_items: service_variants_enabled
   tags:
-  - theme
+    - gather_static_assets
+    - theme
+  with_items: service_variants_enabled

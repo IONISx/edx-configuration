@@ -61,7 +61,7 @@
   sudo_user: "{{ edx_notes_api_user }}"
   environment:
     EDXNOTES_CONFIG_ROOT: "{{ COMMON_CFG_DIR }}"
-  #when: migrate_db is defined and migrate_db|lower == "yes"
+  when: migrate_db is defined and migrate_db|lower == "yes"
 
 - name: write out gunicorn.py
   template: >
@@ -96,7 +96,7 @@
     - deploy
 
 - name: restart supervisor
-  supervisorctl_local: >
+  supervisorctl: >
     name={{ edx_notes_api_service_name }}
     supervisorctl_path={{ supervisor_ctl }}
     config={{ supervisor_cfg }}
@@ -120,3 +120,12 @@
     src="{{ edx_notes_api_manage }}"
     dest="{{ COMMON_BIN_DIR }}/manage.{{ edx_notes_api_service_name }}"
     state=link
+
+- name: restart edx_notes_api
+  supervisorctl: >
+    state=restarted
+    supervisorctl_path={{ supervisor_ctl }}
+    config={{ supervisor_cfg }}
+    name={{ edx_notes_api_service_name }}
+  when: not disable_edx_services
+  sudo_user: "{{ supervisor_service_user }}"

@@ -54,7 +54,11 @@
   when: not disable_edx_services
 
 - name: ensure gitreload is started
+<<<<<<< HEAD
   supervisorctl_local: >
+=======
+  supervisorctl: >
+>>>>>>> named-release/cypress
     name=gitreload
     supervisorctl_path={{ supervisor_ctl }}
     config={{ supervisor_cfg }}

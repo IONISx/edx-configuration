@@ -122,7 +122,11 @@
   - manage.py
 
 - name: restart analytics_api
+<<<<<<< HEAD
   supervisorctl_local: >
+=======
+  supervisorctl: >
+>>>>>>> named-release/cypress
     state=restarted
     supervisorctl_path={{ supervisor_ctl }}
     config={{ supervisor_cfg }}
